@@ -2,17 +2,19 @@ import { Router } from "express";
 
 import * as apartmentsController from "../controller/apartmentsController.js";
 
+import { requiresAuth } from "express-openid-connect";
+
 const router = Router();
 
 router
 	.route("/")
 	.get(apartmentsController.getAllApartments)
-	.post(apartmentsController.createApartment);
+	.post(requiresAuth(), apartmentsController.createApartment);
 
 router
 	.route("/:id")
 	.get(apartmentsController.getApartment)
-	.patch(apartmentsController.editApartment)
-	.delete(apartmentsController.deleteApartment);
+	.patch(requiresAuth(), apartmentsController.editApartment)
+	.delete(requiresAuth(), apartmentsController.deleteApartment);
 
 export default router;

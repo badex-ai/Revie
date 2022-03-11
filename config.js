@@ -8,7 +8,7 @@ export const configAuth = {
 	authRequired: false,
 	auth0Logout: true,
 	secret: process.env.secret,
-	baseURL: "http://localhost:8000/api/v1",
+	baseURL: "http://localhost:8000",
 	clientID: process.env.clientID,
 	issuerBaseURL: "https://dev-b58ldaey.us.auth0.com",
 	// routes: {
