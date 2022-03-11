@@ -2,8 +2,8 @@ import { Router } from "express";
 
 import * as apartmentsController from "../controller/apartmentsController.js";
 
-import { requiresAuth } from "express-openid-connect";
-
+import pkg from "express-openid-connect";
+const { requiresAuth } = pkg;
 const router = Router();
 
 router
