@@ -1,6 +1,6 @@
 import app from "./app.js";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+import { config } from "./config.js";
 
 process.on("uncaughtException", (err) => {
 	console.log("an uncaught error here");
@@ -10,14 +10,11 @@ process.on("uncaughtException", (err) => {
 	process.exit(1);
 });
 mongoose
-	.connect(process.env.DATABASE_LOCAL, {
+	.connect("mongodb://localhost:27017/Revie", {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
-		useCreateIndex: true,
-		useFindAndModify: false,
 	})
 	.then(() => {
-		console.log(con.connections);
 		console.log("---------------------------------");
 		console.log("                                  ");
 		console.log("Local database connected");
@@ -26,12 +23,10 @@ mongoose
 		console.log(err);
 	});
 
-dotenv.config({
-	path: "./.env",
-});
+console.log(config.DATABASE_LOCAL);
 
 const port = process.env.PORT;
-server = app.listen(port || 8080, () => {
+const server = app.listen(port || 8080, () => {
 	console.log(`App running on port ${port}`);
 });
 

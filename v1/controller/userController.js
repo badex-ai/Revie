@@ -1,8 +1,9 @@
-import * as factory from "./handlerFactory.ja";
+import * as factory from "./handlerFactory.js";
 
 import User from "../models/userModel.js";
 
-export const createUser = factory.createOne(User);
+export const signUp = (req, res, next) => {};
+export const signIn = (req, res, next) => {};
 
 export const getAllUsers = factory.getAll(User);
 

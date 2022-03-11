@@ -12,7 +12,6 @@ export const createOne = (Model) =>
 			},
 		});
 	});
-
 export const updateOne = (Model) =>
 	catchAsync(async (req, res, next) => {
 		const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
@@ -29,7 +28,6 @@ export const updateOne = (Model) =>
 			},
 		});
 	});
-
 export const getAll = (Model) =>
 	catchAsync(async (req, res, next) => {
 		// to allow nested get review on tour
@@ -37,11 +35,9 @@ export const getAll = (Model) =>
 		if (req.params.tourId) {
 			filter = { tour: req.params.tourId };
 		}
-		const features = new APIFeatures(Model.find(filter), req.query)
+		const features = new APIfeatures(Model.find(filter), req.query)
 			.filter()
-			.sort()
-			.limitFields()
-			.paginate();
+			.sort();
 
 		const doc = await features.query;
 
@@ -53,7 +49,6 @@ export const getAll = (Model) =>
 			},
 		});
 	});
-
 // We us populate to fill the field with their values
 // when referenced in the schema the select key is used
 // to remove unwanted fields in the response
@@ -74,7 +69,6 @@ export const getOne = (Model, popOptions) =>
 			},
 		});
 	});
-
 export const deleteOne = (Model) =>
 	catchAsync(async (req, res, next) => {
 		const doc = await Model.findByIdAndDelete(req.params.id);

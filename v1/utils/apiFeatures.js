@@ -5,7 +5,7 @@ export class APIfeatures {
 	}
 
 	filter() {
-		queryObj = { ...this.queryString };
+		const queryObj = { ...this.queryString };
 		const excludedFields = ["sort", "page", "limit", "fields"];
 		excludedFields.forEach((el) => {
 			delete queryObj[el];
@@ -25,5 +25,6 @@ export class APIfeatures {
 			this.query = this.query.sort(sortBy);
 		}
 		this.query = this.query.sort("-createdAt");
+		return this;
 	}
 }
