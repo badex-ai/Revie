@@ -1,21 +1,10 @@
 import dotenv from "dotenv";
+import jwt from "express-jwt";
+import jwks from "jwks-rsa";
 
 dotenv.config({
 	path: "./config.env",
 });
-
-export const configAuth = {
-	authRequired: false,
-	auth0Logout: true,
-	secret: process.env.secret,
-	baseURL: "http://localhost:8000",
-	clientID: process.env.clientID,
-	issuerBaseURL: "https://dev-b58ldaey.us.auth0.com",
-	// routes: {
-	// 	login: false,
-	// 	logout: "/",
-	// },
-};
 
 export const config = {
 	DATABASE_LOCAL: process.env.DATABASE_LOCAL,
@@ -23,4 +12,7 @@ export const config = {
 
 	PORT: process.env.PORT,
 	NODE_ENV: process.NODE_ENV,
+	JWT_SECRET: process.env.JWT_SECRET,
+	JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+	NODE_ENV: process.env.NODE_ENV,
 };

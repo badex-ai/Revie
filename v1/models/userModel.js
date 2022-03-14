@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 import validator from "validator";
+import bcrypt from "bcrypt";
 
-const userModel = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
 	name: {
 		type: String,
-		required: [true, " Please tell us your name "],
+		required: [true, "Please tell us your name "],
 	},
 	email: {
 		type: String,
@@ -36,6 +37,19 @@ const userModel = new mongoose.Schema({
 	},
 });
 
-const User = mongoose.model("User", userModel);
+userSchema.pre("save", async function (next) {
+	this.password = await bcrypt.hash(this.password, 12);
+	this.passwordConfirm = undefined;
+	next();
+});
+
+userSchema.methods.checkIfCorrectPassword = async function (
+	candidatePassword,
+	userPassword
+) {
+	await bcrypt.compare(candidatePassword, userPassword);
+};
+
+const User = mongoose.model("User", userSchema);
 
 export default User;

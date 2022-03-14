@@ -2,19 +2,33 @@ import { Router } from "express";
 
 import * as apartmentsController from "../controller/apartmentsController.js";
 
-import pkg from "express-openid-connect";
-const { requiresAuth } = pkg;
+import jwt from "express-jwt";
+import jwks from "jwks-rsa";
+
 const router = Router();
+
+// req.isAuthenticated is provided from the auth router
+var jwtCheck = jwt({
+	secret: jwks.expressJwtSecret({
+		cache: true,
+		rateLimit: true,
+		jwksRequestsPerMinute: 5,
+		jwksUri: "https://dev-b58ldaey.us.auth0.com/.well-known/jwks.json",
+	}),
+	audience: "http://localhost:8000/",
+	issuer: "https://dev-b58ldaey.us.auth0.com/",
+	algorithms: ["RS256"],
+});
 
 router
 	.route("/")
 	.get(apartmentsController.getAllApartments)
-	.post(requiresAuth(), apartmentsController.createApartment);
+	.post(apartmentsController.createApartment);
 
 router
 	.route("/:id")
 	.get(apartmentsController.getApartment)
-	.patch(requiresAuth(), apartmentsController.editApartment)
-	.delete(requiresAuth(), apartmentsController.deleteApartment);
+	.patch(jwtCheck, apartmentsController.editApartment)
+	.delete(jwtCheck, apartmentsController.deleteApartment);
 
 export default router;

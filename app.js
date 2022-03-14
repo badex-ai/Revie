@@ -1,10 +1,10 @@
 import express from "express";
-import path from "path";
 import cors from "cors";
 import apartmentsRouter from "./v1/Routes/apartmentsRoutes.js";
 import userRouter from "./v1/Routes/userRoute.js";
-import { auth } from "express-openid-connect";
-import { configAuth, config } from "./config.js";
+import { globalErrorHandler } from "./v1/controller/errorController.js";
+
+import { config } from "./config.js";
 
 import morgan from "morgan";
 
@@ -13,13 +13,6 @@ app.use(express.json());
 if (config.NODE_ENV === "development") {
 	app.use(morgan("dev"));
 }
-
-// console.log(
-// 	config,
-
-// 	configAuth
-// );
-
 app.use(
 	cors({
 		origin: "*",
@@ -27,17 +20,14 @@ app.use(
 	})
 );
 
-// auth router attaches /login, /logout, and /callback routes to the baseURL
-app.use(auth(configAuth));
+// app.use("/api/v1/", apartmentsRouter);
+app.use("/api/v1/", userRouter);
+app.use("/api/v1/apartments", apartmentsRouter);
 
-// app.get("/login", (req, res) => res.oidc.login({ returnTo: "/user/signup" }));
-
-app.get("/", (req, res) => {
-	res.send(req.oidc.isAuthenticated() ? "Logged in" : "Logged out");
+app.all("*", (req, res, next) => {
+	next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
-// app.use("/api/v1/", apartmentsRouter);
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/apartments", apartmentsRouter);
+app.use(globalErrorHandler);
 
 export default app;
