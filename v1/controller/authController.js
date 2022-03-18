@@ -5,13 +5,14 @@ import { catchAsync } from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
 
 function signToken(id) {
-	jwt.sign({ id }, config.JWT_SECRET, {
+	const signature = jwt.sign({ id }, config.JWT_SECRET, {
 		expiresIn: config.JWT_EXPIRES_IN,
 	});
+	return signature;
 }
 
 function createSendToken(user, statusCode, res) {
-	const token = signToken(user._id);
+	let token = signToken(user._id);
 	const cookieOptions = {
 		expires: new Date(
 			Date.now() + process.env.COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
@@ -19,8 +20,7 @@ function createSendToken(user, statusCode, res) {
 		httpOnly: true,
 		secure: config.NODE_ENV === "production",
 	};
-
-	res.cookie("loggedIn", true, cookieOptions);
+	res.cookie("jwt", token, cookieOptions);
 
 	user.password = undefined;
 
@@ -40,17 +40,17 @@ export const signUp = catchAsync(async (req, res, next) => {
 		password: req.body.password,
 		passwordConfirm: req.body.passwordConfirm,
 	});
-
-	console.log("------------------------------------ ");
-	console.log("signed up ");
-	console.log("                                 ");
 	console.log(newUser);
+	console.log("------------------------------------ ");
+	console.log("signing up ");
+	console.log("                                 ");
 
 	createSendToken(newUser, 201, res);
 });
 export const signIn = async (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
+	console.log(email, password);
 
 	if (!email || !password) {
 		return next(new AppError("Please provide email and password!", 400));
@@ -58,10 +58,12 @@ export const signIn = async (req, res, next) => {
 
 	const user = await User.findOne({ email }).select("+password");
 
+	console.log(user);
+
 	if (!user || !(await user.checkIfCorrectPassword(password, user.password))) {
 		return next(new AppError("Incorrect email or password", 401));
 	}
-	createSendToken(user, 200, res);
+	createSendToken(user._id, 200, res);
 };
 
 export const protect = catchAsync(async (req, res, next) => {

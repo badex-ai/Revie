@@ -9,6 +9,6 @@ const router = Router();
 router.route("/signup").post(authController.signUp);
 router.route("/signin").post(authController.signIn);
 
-router.route("/me").get(userController.getUser);
+router.route("/me").get(authController.protect, userController.getUser);
 
 export default router;
