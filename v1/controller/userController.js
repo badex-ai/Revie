@@ -9,3 +9,5 @@ export const getMe = (req, res, next) => {
 	req.params.id = req.user.id;
 	next();
 };
+
+export const editMe = factory.updateOne(User);

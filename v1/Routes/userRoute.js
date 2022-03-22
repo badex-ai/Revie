@@ -10,6 +10,9 @@ router.route("/signup").post(authController.signUp);
 router.route("/signin").post(authController.signIn);
 
 router.use(authController.protect);
-router.route("/me").get(userController.getMe, userController.getUser);
+router
+	.route("/me")
+	.get(userController.getMe, userController.getUser)
+	.patch(userController.editMe);
 
 export default router;
