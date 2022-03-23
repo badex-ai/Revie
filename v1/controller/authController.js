@@ -58,7 +58,7 @@ export const signIn = async (req, res, next) => {
 
 	const user = await User.findOne({ email }).select("+password");
 
-	console.log(user);
+	console.log(await user.checkIfCorrectPassword(password, user.password));
 
 	if (!user || !(await user.checkIfCorrectPassword(password, user.password))) {
 		return next(new AppError("Incorrect email or password", 401));
@@ -67,12 +67,14 @@ export const signIn = async (req, res, next) => {
 };
 
 export const protect = catchAsync(async (req, res, next) => {
+	// console.log(req);
 	let token;
 	if (
 		req.headers.authorization &&
 		req.headers.authorization.startsWith("Bearer")
 	) {
-		[, token] = req.headers.authorization.split;
+		// [, token] = req.headers.authorization.split;
+		token = req.headers.authorization.split(" ")[1];
 	} else if (req.cookies.jwt) {
 		token = req.cookies.jwt;
 	}
