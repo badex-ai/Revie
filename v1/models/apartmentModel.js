@@ -22,7 +22,7 @@ const apartmentSchema = new mongoose.Schema({
 			"Edo",
 			"Ekiti",
 			"Enugu",
-			"FCT - Abuja",
+			"Abuja",
 			"Gombe",
 			"Imo",
 			"Jigawa",
@@ -48,11 +48,11 @@ const apartmentSchema = new mongoose.Schema({
 		],
 		required: [true, "apartment address must be filled"],
 	},
-	createdBy: {
-		type: mongoose.Schema.ObjectId,
-		ref: "User",
-		required: [true, "Apartment must be created by user"],
-	},
+	// user: {
+	// 	type: mongoose.Schema.ObjectId,
+	// 	ref: "User",
+	// 	required: [true, "Apartment must be created by user"],
+	// },
 	createdAt: {
 		type: Date,
 		default: Date.now(),

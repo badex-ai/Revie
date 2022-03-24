@@ -77,6 +77,7 @@ export const protect = catchAsync(async (req, res, next) => {
 		token = req.headers.authorization.split(" ")[1];
 	} else if (req.cookies.jwt) {
 		token = req.cookies.jwt;
+		// console.log(token);
 	}
 	if (!token) {
 		return next(
@@ -95,3 +96,18 @@ export const protect = catchAsync(async (req, res, next) => {
 
 	next();
 });
+
+export const updatePassword = async function (req, res, next) {
+	// console.log(req.user);
+	const user = await User.findById(req.user.id).select(+password);
+
+	if (!user.checkIfCorrectPassword(currentUser.password, user.password)) {
+		return next(new AppError("Your current password is wrong.", 401));
+	}
+
+	(user.password = req.body.newPassword),
+		(user.passwordConfirm = req.body.newPasswordConfirm);
+	user.save();
+
+	createSendToken(user, 200, res);
+};

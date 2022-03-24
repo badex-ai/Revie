@@ -8,7 +8,11 @@ const router = Router();
 router
 	.route("/")
 	.get(apartmentsController.getAllApartments)
-	.post(protect, apartmentsController.createApartment);
+	.post(
+		protect,
+		apartmentsController.setUserId,
+		apartmentsController.createApartment
+	);
 
 router
 	.route("/:id")

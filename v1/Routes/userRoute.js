@@ -15,4 +15,6 @@ router
 	.get(userController.getMe, userController.getUser)
 	.patch(userController.editMe);
 
+router.patch("/updatePassword", authController.updatePassword);
+
 export default router;
