@@ -4,13 +4,16 @@ import User from "../models/userModel.js";
 import * as factory from "./handlerFactory.js";
 
 export function setUserId(req, res, next) {
+	console.log(req.params);
 	if (!req.body.user) req.body.user = req.user.id;
 
-	console.log(req.body.user);
 	next();
 }
 
-export const getAllApartments = factory.getAll(Apartment);
+export const getAllApartments = () => {
+	console.log(req);
+	factory.getAll(Apartment);
+};
 
 export const getApartment = factory.getOne(Apartment);
 

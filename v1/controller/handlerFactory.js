@@ -30,24 +30,22 @@ export const updateOne = (Model) =>
 	});
 export const getAll = (Model) =>
 	catchAsync(async (req, res, next) => {
-		// to allow nested get review on tour
+		console.log(Model, req);
 		let filter = {};
-		if (req.params.tourId) {
-			filter = { tour: req.params.tourId };
-		}
-		const features = new APIfeatures(Model.find(filter), req.query)
-			.filter()
-			.sort();
+		// if (req.params.) {
+		// 	filter = { tour: req.params.tourId };
+		// }
+		// const features = new APIfeatures(Model.find(), req.query).filter().sort();
 
-		const doc = await features.query;
+		// const doc = await features.query;
 
-		res.status(200).json({
-			status: "success",
-			results: doc.length,
-			data: {
-				data: doc,
-			},
-		});
+		// res.status(200).json({
+		// 	status: "success",
+		// 	results: doc.length,
+		// 	data: {
+		// 		data: doc,
+		// 	},
+		// });
 	});
 // We us populate to fill the field with their values
 // when referenced in the schema the select key is used

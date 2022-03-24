@@ -9,4 +9,5 @@ router.use(authController.protect);
 router
 	.route("/review")
 	.post(reviewController.createReview)
-	.post(reviewController.updateReview);
+	.patch(reviewController.updateReview)
+	.delete(reviewController.deleteReview);
