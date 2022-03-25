@@ -11,14 +11,14 @@ const reviewSchema = new mongoose.Schema(
 			enum: ["Excellent", "Good", "Fair", "Bad", "Awful"],
 		},
 		user: {
-			type: mongoose.Schema.ObjectId,
+			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 			required: [true, "Review must belong to a user"],
 		},
 		apartment: {
-			type: mongoose.Schema.ObjectId,
+			type: mongoose.Schema.Types.ObjectId,
 			ref: "Apartment",
-			required: [true, "Review must belong to a user"],
+			required: [true, "Review must belong to an apartment"],
 		},
 		amenities: {
 			type: String,
@@ -45,7 +45,10 @@ const reviewSchema = new mongoose.Schema(
 
 reviewSchema.pre(/^find/, function (next) {
 	this.populate({
-		path: "User",
+		path: "user",
+		select: "name",
+	}).populate({
+		path: "apartment",
 		select: "name",
 	});
 

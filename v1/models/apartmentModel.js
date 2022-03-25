@@ -50,7 +50,7 @@ const apartmentSchema = new mongoose.Schema(
 			required: [true, "apartment address must be filled"],
 		},
 		user: {
-			type: mongoose.Schema.ObjectId,
+			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 		},
 		createdAt: {
@@ -74,7 +74,7 @@ const apartmentSchema = new mongoose.Schema(
 
 apartmentSchema.pre(/^find/, function (next) {
 	this.populate({
-		path: "User",
+		path: "user",
 		select: "name",
 	});
 	next();

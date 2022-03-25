@@ -9,13 +9,11 @@ export function setUserId(req, res, next) {
 
 	next();
 }
+// export function setApartmentId(){}
 
-export const getAllApartments = () => {
-	console.log(req);
-	factory.getAll(Apartment);
-};
+export const getAllApartments = factory.getAll(Apartment);
 
-export const getApartment = factory.getOne(Apartment);
+export const getApartment = factory.getOne(Apartment, { path: "reviews" });
 
 export const deleteApartment = factory.deleteOne(Apartment);
 

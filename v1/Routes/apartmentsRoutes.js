@@ -1,15 +1,17 @@
 import { Router } from "express";
 
 import * as apartmentsController from "../controller/apartmentsController.js";
-import { protect } from "../controller/authController.js";
+import * as authController from "../controller/authController.js";
 
 const router = Router();
+
+// router.get("/", apartmentsController.getAllApartments);
 
 router
 	.route("/")
 	.get(apartmentsController.getAllApartments)
 	.post(
-		protect,
+		authController.protect,
 		apartmentsController.setUserId,
 		apartmentsController.createApartment
 	);
@@ -17,7 +19,7 @@ router
 router
 	.route("/:id")
 	.get(apartmentsController.getApartment)
-	.patch(protect, apartmentsController.editApartment)
-	.delete(protect, apartmentsController.deleteApartment);
+	.patch(authController.protect, apartmentsController.editApartment)
+	.delete(authController.protect, apartmentsController.deleteApartment);
 
 export default router;

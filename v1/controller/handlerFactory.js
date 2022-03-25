@@ -30,22 +30,22 @@ export const updateOne = (Model) =>
 	});
 export const getAll = (Model) =>
 	catchAsync(async (req, res, next) => {
-		console.log(Model, req);
+		console.log(Model);
 		let filter = {};
 		// if (req.params.) {
 		// 	filter = { tour: req.params.tourId };
 		// }
-		// const features = new APIfeatures(Model.find(), req.query).filter().sort();
+		const features = new APIfeatures(Model.find(), req.query).filter().sort();
 
-		// const doc = await features.query;
+		const doc = await features.query;
 
-		// res.status(200).json({
-		// 	status: "success",
-		// 	results: doc.length,
-		// 	data: {
-		// 		data: doc,
-		// 	},
-		// });
+		res.status(200).json({
+			status: "success",
+			results: doc.length,
+			data: {
+				data: doc,
+			},
+		});
 	});
 // We us populate to fill the field with their values
 // when referenced in the schema the select key is used
@@ -54,7 +54,7 @@ export const getOne = (Model, popOptions) =>
 	catchAsync(async (req, res, next) => {
 		let query = Model.findById(req.params.id);
 		if (popOptions) {
-			query = query.populate();
+			query = query.populate(popOptions);
 		}
 		const doc = await query;
 		if (!doc) {
