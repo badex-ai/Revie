@@ -1,13 +1,20 @@
-import Review from "../models/reviewModel";
 import * as authController from "../controller/authController.js";
-import * as reviewController from "../controller/reviewsController";
+import * as reviewController from "../controller/reviewsController.js";
 import { Router } from "express";
 
-const router = Router();
+const router = Router({ mergeParams: true });
+
+router.route("/").get(reviewController.getAllReviews);
+router.route("/:id").get(reviewController.getReview);
 
 router.use(authController.protect);
 router
-	.route("/review")
-	.post(reviewController.createReview)
+	.route("/")
+	.post(reviewController.setUserAndApartmentId, reviewController.createReview);
+
+router
+	.route("/:id")
 	.patch(reviewController.updateReview)
 	.delete(reviewController.deleteReview);
+
+export default router;

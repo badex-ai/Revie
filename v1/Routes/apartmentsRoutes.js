@@ -3,9 +3,11 @@ import { Router } from "express";
 import * as apartmentsController from "../controller/apartmentsController.js";
 import * as authController from "../controller/authController.js";
 
+import reviewRoute from "./reviewRoute.js";
+
 const router = Router();
 
-// router.get("/", apartmentsController.getAllApartments);
+router.use("/:apartmentId/reviews", reviewRoute);
 
 router
 	.route("/")

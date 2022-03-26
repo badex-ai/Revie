@@ -10,7 +10,7 @@ const reviewSchema = new mongoose.Schema(
 			type: String,
 			enum: ["Excellent", "Good", "Fair", "Bad", "Awful"],
 		},
-		user: {
+		createdBy: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 			required: [true, "Review must belong to a user"],
@@ -20,21 +20,18 @@ const reviewSchema = new mongoose.Schema(
 			ref: "Apartment",
 			required: [true, "Review must belong to an apartment"],
 		},
-		amenities: {
-			type: String,
-			enum: ["Excellent", "Good", "fair", "bad", "Awful"],
-			required: [true, "Please choose an amenities rating"],
-		},
-		landlord: {
-			types: String,
-			required: [true, "Please enter landlord review"],
-		},
+		// amenities: {
+		// 	type: String,
+		// 	enum: ["Excellent", "Good", "fair", "bad", "Awful"],
+		// 	required: [true, "Please choose an amenities rating"],
+		// },
 		createdAt: {
 			type: Date,
 			default: Date.now(),
 		},
 		helpfulCount: {
 			type: Number,
+			default: 0,
 		},
 	},
 	{
@@ -45,10 +42,7 @@ const reviewSchema = new mongoose.Schema(
 
 reviewSchema.pre(/^find/, function (next) {
 	this.populate({
-		path: "user",
-		select: "name",
-	}).populate({
-		path: "apartment",
+		path: "createdBy",
 		select: "name",
 	});
 

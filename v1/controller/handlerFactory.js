@@ -1,5 +1,6 @@
 import { catchAsync } from "../utils/catchAsync.js";
 import { APIfeatures } from "../utils/apiFeatures.js";
+import AppError from "../utils/appError.js";
 
 export const createOne = (Model) =>
 	catchAsync(async (req, res, next) => {
@@ -32,9 +33,9 @@ export const getAll = (Model) =>
 	catchAsync(async (req, res, next) => {
 		console.log(Model);
 		let filter = {};
-		// if (req.params.) {
-		// 	filter = { tour: req.params.tourId };
-		// }
+		if (req.params.apartmentId) {
+			filter = { tour: req.params.apartmentId };
+		}
 		const features = new APIfeatures(Model.find(), req.query).filter().sort();
 
 		const doc = await features.query;
