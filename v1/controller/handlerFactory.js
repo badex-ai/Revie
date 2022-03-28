@@ -36,7 +36,9 @@ export const getAll = (Model) =>
 		if (req.params.apartmentId) {
 			filter = { tour: req.params.apartmentId };
 		}
-		const features = new APIfeatures(Model.find(), req.query).filter().sort();
+		const features = new APIfeatures(Model.find(filter), req.query)
+			.filter()
+			.sort();
 
 		const doc = await features.query;
 
@@ -70,7 +72,9 @@ export const getOne = (Model, popOptions) =>
 	});
 export const deleteOne = (Model) =>
 	catchAsync(async (req, res, next) => {
+		console.log(req.user, req.params.id);
 		const doc = await Model.findByIdAndDelete(req.params.id);
+		console.log(doc);
 
 		if (!doc) {
 			next(new AppError("No document found with that ID", 404));

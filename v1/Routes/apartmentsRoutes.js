@@ -7,8 +7,6 @@ import reviewRoute from "./reviewRoute.js";
 
 const router = Router();
 
-router.use("/:apartmentId/reviews", reviewRoute);
-
 router
 	.route("/")
 	.get(apartmentsController.getAllApartments)
@@ -21,7 +19,17 @@ router
 router
 	.route("/:id")
 	.get(apartmentsController.getApartment)
-	.patch(authController.protect, apartmentsController.editApartment)
-	.delete(authController.protect, apartmentsController.deleteApartment);
+	.patch(
+		authController.protect,
+		apartmentsController.setUserId,
+		apartmentsController.editApartment
+	)
+	.delete(
+		authController.protect,
+		// apartmentsController.setUserId,
+		apartmentsController.deleteApartment
+	);
+
+router.use("/:apartmentId/reviews", reviewRoute);
 
 export default router;

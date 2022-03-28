@@ -99,9 +99,10 @@ export const protect = catchAsync(async (req, res, next) => {
 
 export const updatePassword = async function (req, res, next) {
 	// console.log(req.user);
-	const user = await User.findById(req.user.id).select(+password);
 
-	if (!user.checkIfCorrectPassword(currentUser.password, user.password)) {
+	const user = await User.findById(req.user.id).select("+password");
+
+	if (!user.checkIfCorrectPassword(req.body.currentPassword, user.password)) {
 		return next(new AppError("Your current password is wrong.", 401));
 	}
 
