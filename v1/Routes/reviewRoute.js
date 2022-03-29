@@ -5,7 +5,7 @@ import { Router } from "express";
 const router = Router({ mergeParams: true });
 
 router.route("/").get(reviewController.getAllReviews);
-router.route("/:id").get(reviewController.getReview);
+// router.route("/:id").get(reviewController.getReview);
 
 router.use(authController.protect);
 router

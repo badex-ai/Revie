@@ -17,4 +17,4 @@ export const updateReview = factory.updateOne(Review);
 
 export const deleteReview = factory.deleteOne(Review);
 
-export const getReview = factory.getOne(Review);
+// export const getReview = factory.getOne(Review);

@@ -15,6 +15,22 @@ export const createOne = (Model) =>
 	});
 export const updateOne = (Model) =>
 	catchAsync(async (req, res, next) => {
+		if (req.params.apartmentId) {
+			//get the document
+			const review = await Model.findById(req.params.id);
+
+			if (review.createdBy.id === req.user.id) {
+				console.log("correct");
+				Model.update(req.params.id);
+			} else {
+				return new AppError("You are not authorized to edit this", 401);
+			}
+
+			//check if the document createdby is same as userid
+
+			// allow to update
+		}
+
 		const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
 			new: true,
 			runValidators: true,

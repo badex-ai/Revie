@@ -10,6 +10,7 @@ router.route("/signup").post(authController.signUp);
 router.route("/signin").post(authController.signIn);
 
 router.use(authController.protect);
+router.route("/logout").get(authController.logout);
 router
 	.route("/me")
 	.get(userController.getMe, userController.getUser)

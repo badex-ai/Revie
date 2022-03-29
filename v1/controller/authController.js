@@ -102,13 +102,26 @@ export const updatePassword = async function (req, res, next) {
 
 	const user = await User.findById(req.user.id).select("+password");
 
-	if (!user.checkIfCorrectPassword(req.body.currentPassword, user.password)) {
+	if (
+		!(await user.checkIfCorrectPassword(
+			req.body.currentPassword,
+			user.password
+		))
+	) {
 		return next(new AppError("Your current password is wrong.", 401));
 	}
-
 	(user.password = req.body.newPassword),
 		(user.passwordConfirm = req.body.newPasswordConfirm);
 	user.save();
 
 	createSendToken(user, 200, res);
 };
+
+export function logout(req, res, next) {
+	// console.log(req.headers.cookie);
+	res.cookie("jwt", "loggedOut", {
+		httpOnly: true,
+		expires: new Date(Date.now() + 10 * 1000),
+	});
+	res.status(200).json({ status: "success" });
+}
