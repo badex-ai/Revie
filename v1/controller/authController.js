@@ -125,3 +125,12 @@ export function logout(req, res, next) {
 	});
 	res.status(200).json({ status: "success" });
 }
+
+export function restrictToAdmin(req, res, next) {
+	if (!(req.user.role === "admin")) {
+		return next(
+			new AppError("You are not allowed to perform this action", 403)
+		);
+	}
+	next();
+}

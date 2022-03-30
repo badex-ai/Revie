@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import apartmentsRouter from "./v1/Routes/apartmentsRoutes.js";
 import userRouter from "./v1/Routes/userRoute.js";
-// import reviewRouter from "./v1/Routes/reviewRoute.js";
+import reviewRouter from "./v1/Routes/reviewRoute.js";
 import { globalErrorHandler } from "./v1/controller/errorController.js";
 import AppError from "./v1/utils/appError.js";
 
@@ -25,7 +25,7 @@ app.use(
 // app.use("/api/v1/", apartmentsRouter);
 app.use("/api/v1/apartments", apartmentsRouter);
 app.use("/api/v1/users", userRouter);
-// app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/reviews", reviewRouter);
 //
 app.all("*", (req, res, next) => {
 	next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
