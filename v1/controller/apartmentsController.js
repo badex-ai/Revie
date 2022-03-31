@@ -4,7 +4,7 @@ import User from "../models/userModel.js";
 import * as factory from "./handlerFactory.js";
 
 export function setUserId(req, res, next) {
-	console.log(req.params);
+	// console.log(req.params);
 	if (!req.body.createdBy) req.body.createdBy = req.user.id;
 
 	next();

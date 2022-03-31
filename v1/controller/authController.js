@@ -40,7 +40,7 @@ export const signUp = catchAsync(async (req, res, next) => {
 		password: req.body.password,
 		passwordConfirm: req.body.passwordConfirm,
 	});
-	console.log(newUser);
+	// console.log(newUser);
 	console.log("------------------------------------ ");
 	console.log("signing up ");
 	console.log("                                 ");
@@ -50,7 +50,7 @@ export const signUp = catchAsync(async (req, res, next) => {
 export const signIn = async (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
-	console.log(email, password);
+	// console.log(email, password);
 
 	if (!email || !password) {
 		return next(new AppError("Please provide email and password!", 400));
@@ -127,10 +127,13 @@ export function logout(req, res, next) {
 }
 
 export function restrictToAdmin(req, res, next) {
-	if (!(req.user.role === "admin")) {
+	if (req.user.role !== "admin") {
+		console.log("e reach here");
 		return next(
 			new AppError("You are not allowed to perform this action", 403)
 		);
 	}
+
+	console.log("e didn't reach there");
 	next();
 }

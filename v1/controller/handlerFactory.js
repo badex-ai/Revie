@@ -1,9 +1,29 @@
 import { catchAsync } from "../utils/catchAsync.js";
 import { APIfeatures } from "../utils/apiFeatures.js";
 import AppError from "../utils/appError.js";
+import Review from "../models/reviewModel.js";
 
+async function checkReview(review, req, next) {
+	const value = await review.aggregate([
+		{
+			$match: {
+				apartment: req.params.apartmentId,
+			},
+		},
+	]);
+	console.log(value);
+	if (value.length !== 0) {
+		next(
+			new AppError(
+				"You cannot create more than one review for an Apartment",
+				401
+			)
+		);
+	}
+}
 export const createOne = (Model) =>
 	catchAsync(async (req, res, next) => {
+		// checkReview(Review, req, next);
 		const doc = await Model.create(req.body);
 
 		res.status(201).json({
@@ -15,20 +35,13 @@ export const createOne = (Model) =>
 	});
 export const updateOne = (Model) =>
 	catchAsync(async (req, res, next) => {
-		if (req.params.apartmentId) {
-			//get the document
-			const review = await Model.findById(req.params.id);
-
-			if (review.createdBy.id === req.user.id) {
-				console.log("correct");
-				Model.update(req.params.id);
-			} else {
-				return new AppError("You are not authorized to edit this", 401);
+		const result = await Model.findById(req.params.id);
+		if (req.params.apartmentId && result) {
+			if (result.createdBy.id !== req.user.id) {
+				next(
+					new AppError("You are not authorized to perform this action", 401)
+				);
 			}
-
-			//check if the document createdby is same as userid
-
-			// allow to update
 		}
 
 		const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
@@ -47,16 +60,48 @@ export const updateOne = (Model) =>
 	});
 export const getAll = (Model) =>
 	catchAsync(async (req, res, next) => {
-		console.log(Model);
+		// console.log(Model);
 		let filter = {};
 		if (req.params.apartmentId) {
-			filter = { tour: req.params.apartmentId };
+			console.log(req.params.apartmentId);
+			filter = { apartment: req.params.apartmentId };
 		}
-		const features = new APIfeatures(Model.find(filter), req.query)
-			.filter()
-			.sort();
 
-		const doc = await features.query;
+		console.log(req.params.apartmentId);
+
+		// const doc = await Model.find()
+		// 	// .select("apartment review")
+		// 	.populate({
+		// 		path: "apartment",
+		// 		select: "id",
+		// 		match: {
+		// 			id: req.params.apartmentId,
+		// 		},
+		// 	});
+
+		const doc = await Model.aggregate([
+			{
+				$match: {
+					_id: req.params.apartmentId,
+				},
+			},
+			{
+				$lookup: {
+					from: "Apartment",
+					localField: "apartment",
+					foreignField: "_id",
+					as: "apartment",
+				},
+			},
+		]);
+
+		console.log(doc);
+		// const features = new APIfeatures(Model.find(filter), req.query)
+		// 	.filter()
+		// 	.sort();
+
+		// const doc = await features.query;
+		// console.log(doc);
 
 		res.status(200).json({
 			status: "success",
@@ -66,9 +111,7 @@ export const getAll = (Model) =>
 			},
 		});
 	});
-// We us populate to fill the field with their values
-// when referenced in the schema the select key is used
-// to remove unwanted fields in the response
+
 export const getOne = (Model, popOptions) =>
 	catchAsync(async (req, res, next) => {
 		let query = Model.findById(req.params.id);
@@ -88,9 +131,18 @@ export const getOne = (Model, popOptions) =>
 	});
 export const deleteOne = (Model) =>
 	catchAsync(async (req, res, next) => {
-		console.log(req.user, req.params.id);
+		const result = await Model.findById(req.params.id);
+		if (req.params.apartmentId && review) {
+			if (review.createdBy.id !== req.user.id && req.user.duty != "admin") {
+				next(
+					new AppError("You are not authorized to perform this action", 401)
+				);
+			}
+		}
+
+		// console.log(req.user, req.params.id);
 		const doc = await Model.findByIdAndDelete(req.params.id);
-		console.log(doc);
+		// // console.log(doc);
 
 		if (!doc) {
 			next(new AppError("No document found with that ID", 404));

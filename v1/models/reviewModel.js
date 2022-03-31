@@ -41,9 +41,10 @@ const reviewSchema = new mongoose.Schema(
 );
 
 reviewSchema.pre(/^find/, function (next) {
+	console.log("populating review model");
 	this.populate({
 		path: "createdBy",
-		select: "name id",
+		select: "name",
 	});
 
 	next();

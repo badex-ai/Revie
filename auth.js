@@ -9,7 +9,7 @@ export const jwtCheck = () => {
 		jwksUri: "https://dev-b58ldaey.us.auth0.com/.well-known/jwks.json",
 	});
 
-	console.log(secret);
+	// console.log(secret);
 
 	return {
 		secret: secret,
