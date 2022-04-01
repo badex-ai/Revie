@@ -7,6 +7,8 @@ const router = Router({ mergeParams: true });
 router.route("/").get(reviewController.getAllReviews);
 // router.route("/:id").get(reviewController.getReview);
 
+router.route("/:id").patch(reviewController.increaseHelpfulCount);
+
 router.use(authController.protect);
 router
 	.route("/")

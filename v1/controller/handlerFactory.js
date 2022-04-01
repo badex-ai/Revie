@@ -3,42 +3,70 @@ import { APIfeatures } from "../utils/apiFeatures.js";
 import AppError from "../utils/appError.js";
 import Review from "../models/reviewModel.js";
 
-async function checkReview(review, req, next) {
-	const value = await review.aggregate([
-		{
-			$match: {
-				apartment: req.params.apartmentId,
-			},
-		},
-	]);
-	console.log(value);
-	if (value.length !== 0) {
-		next(
-			new AppError(
-				"You cannot create more than one review for an Apartment",
-				401
-			)
-		);
+async function checkReview(Model, req, next) {
+	if (req.params.apartmentId) {
+		// console.log(req.params.apartmentId);
+		// filter = { apartment: req.params.apartmentId };
+		let doc = await Model.find()
+			.populate({
+				path: "apartment",
+				select: "id",
+			})
+
+			.exec();
+
+		// console.log(doc, "this is the first doc");
+
+		doc = doc.filter((el) => {
+			// console.log(req.params);
+			// console.log(req.params.apartmentId, el.apartment.id);
+			if (el.apartment.id === req.params.apartmentId) {
+				return el;
+			}
+		});
+
+		// console.log(doc, "this is the doc");
+		return doc;
 	}
 }
 export const createOne = (Model) =>
 	catchAsync(async (req, res, next) => {
-		// checkReview(Review, req, next);
-		const doc = await Model.create(req.body);
+		const reviews = await checkReview(Model, req, next);
+		//
 
-		res.status(201).json({
-			status: "success",
-			data: {
-				data: doc,
-			},
-		});
+		let reviewCount = 0;
+		for (let review in reviews) {
+			console.log(reviews);
+
+			if (review.createdBy === req.user.id) {
+				reviewCount++;
+			}
+		}
+		console.log(reviewCount);
+		if (reviewCount > 0) {
+			return next(
+				new AppError(
+					"You cannot create more than one review for an Apartment",
+					401
+				)
+			);
+		}
+
+		// const doc = await Model.create(req.body);
+
+		// res.status(201).json({
+		// 	status: "success",
+		// 	data: {
+		// 		data: doc,
+		// 	},
+		// });
 	});
 export const updateOne = (Model) =>
 	catchAsync(async (req, res, next) => {
 		const result = await Model.findById(req.params.id);
 		if (req.params.apartmentId && result) {
 			if (result.createdBy.id !== req.user.id) {
-				next(
+				return next(
 					new AppError("You are not authorized to perform this action", 401)
 				);
 			}
@@ -60,47 +88,30 @@ export const updateOne = (Model) =>
 	});
 export const getAll = (Model) =>
 	catchAsync(async (req, res, next) => {
-		// console.log(Model);
 		let filter = {};
 		if (req.params.apartmentId) {
-			console.log(req.params.apartmentId);
+			// console.log(req.params.apartmentId);
 			filter = { apartment: req.params.apartmentId };
+			let doc = await Model.find()
+				.populate({
+					path: "apartment",
+					select: "id",
+				})
+				.exec();
+
+			doc = doc.filter((el) => {
+				// console.log(req.params.apartmentId, el.apartment.id);
+				if (el.apartment.id === req.params.apartmentId) {
+					return el;
+				}
+			});
 		}
 
-		console.log(req.params.apartmentId);
+		const features = new APIfeatures(Model.find(filter), req.query)
+			.filter()
+			.sort();
 
-		// const doc = await Model.find()
-		// 	// .select("apartment review")
-		// 	.populate({
-		// 		path: "apartment",
-		// 		select: "id",
-		// 		match: {
-		// 			id: req.params.apartmentId,
-		// 		},
-		// 	});
-
-		const doc = await Model.aggregate([
-			{
-				$match: {
-					_id: req.params.apartmentId,
-				},
-			},
-			{
-				$lookup: {
-					from: "Apartment",
-					localField: "apartment",
-					foreignField: "_id",
-					as: "apartment",
-				},
-			},
-		]);
-
-		console.log(doc);
-		// const features = new APIfeatures(Model.find(filter), req.query)
-		// 	.filter()
-		// 	.sort();
-
-		// const doc = await features.query;
+		const doc = await features.query;
 		// console.log(doc);
 
 		res.status(200).json({
@@ -132,9 +143,9 @@ export const getOne = (Model, popOptions) =>
 export const deleteOne = (Model) =>
 	catchAsync(async (req, res, next) => {
 		const result = await Model.findById(req.params.id);
-		if (req.params.apartmentId && review) {
-			if (review.createdBy.id !== req.user.id && req.user.duty != "admin") {
-				next(
+		if (req.params.apartmentId && result) {
+			if (result.createdBy.id !== req.user.id && req.user.duty != "admin") {
+				return next(
 					new AppError("You are not authorized to perform this action", 401)
 				);
 			}

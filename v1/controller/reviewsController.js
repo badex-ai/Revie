@@ -9,6 +9,19 @@ export function setUserAndApartmentId(req, res, next) {
 	next();
 }
 
+export async function increaseHelpfulCount(req, res, next) {
+	const rev = await Review.findById(req.params.id);
+
+	rev.increaseHelpfulCount();
+	rev.save();
+	console.log(rev);
+
+	res.status(200).json({
+		status: "success",
+		data: rev,
+	});
+}
+
 export const createReview = factory.createOne(Review);
 
 export const getAllReviews = factory.getAll(Review);
