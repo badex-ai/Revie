@@ -10,6 +10,7 @@ export function setUserAndApartmentId(req, res, next) {
 }
 
 export async function increaseHelpfulCount(req, res, next) {
+	console.log(req.params);
 	const rev = await Review.findById(req.params.id);
 
 	rev.increaseHelpfulCount();
