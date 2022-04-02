@@ -20,11 +20,6 @@ const reviewSchema = new mongoose.Schema(
 			ref: "Apartment",
 			required: [true, "Review must belong to an apartment"],
 		},
-		// amenities: {
-		// 	type: String,
-		// 	enum: ["Excellent", "Good", "fair", "bad", "Awful"],
-		// 	required: [true, "Please choose an amenities rating"],
-		// },
 		createdAt: {
 			type: Date,
 			default: Date.now(),

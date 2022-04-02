@@ -3,7 +3,7 @@ import { APIfeatures } from "../utils/apiFeatures.js";
 import AppError from "../utils/appError.js";
 import Review from "../models/reviewModel.js";
 
-async function checkReview(Model, req, next, Fn) {
+async function checkForReviewInApartment(Model, req, next, Fn) {
 	let doc = await Model.find().populate({
 		path: "apartment",
 		select: "id",
@@ -21,7 +21,7 @@ async function checkReview(Model, req, next, Fn) {
 export const createOne = (Model) =>
 	catchAsync(async (req, res, next) => {
 		if (req.params.apartmentId) {
-			const reviews = await checkReview(Model, req, next);
+			const reviews = await checkForReviewInApartment(Model, req, next);
 			//
 
 			let reviewCount = 0;
@@ -54,13 +54,13 @@ export const createOne = (Model) =>
 export const updateOne = (Model) =>
 	catchAsync(async (req, res, next) => {
 		const result = await Model.findById(req.params.id);
-		if (req.params.apartmentId && result) {
+		if ((req.params.apartmentId || req.params.id) && result) {
 			if (req.body.helpfulCount) {
 				return next(
-					new AppError("You can not increase helpfulness this way", 401)
+					new AppError("You can not increase helpfulness this route", 401)
 				);
 			}
-			if (result.createdBy.id !== req.user.id) {
+			if (!result.createdBy._id.equals(req.user._id)) {
 				return next(
 					new AppError("You are not authorized to perform this action", 401)
 				);
@@ -86,7 +86,7 @@ export const getAll = (Model) =>
 		let filter = {};
 		let doc;
 		if (req.params.apartmentId) {
-			doc = await checkReview(Model, req, next);
+			doc = await checkForReviewInApartment(Model, req, next);
 		} else {
 			const features = new APIfeatures(Model.find(filter), req.query)
 				.filter()
@@ -95,7 +95,9 @@ export const getAll = (Model) =>
 			doc = await features.query;
 		}
 
-		// console.log(doc);
+		if (doc.length === 0 || !doc) {
+			return next(new AppError("No document found with that ID", 404));
+		}
 
 		res.status(200).json({
 			status: "success",
@@ -126,22 +128,30 @@ export const getOne = (Model, popOptions) =>
 export const deleteOne = (Model) =>
 	catchAsync(async (req, res, next) => {
 		const result = await Model.findById(req.params.id);
-		if (req.params.apartmentId && result) {
-			if (result.createdBy.id !== req.user.id && req.user.duty != "admin") {
+		// console.log(result.createdBy.id, req.user.id);
+		if ((req.params.apartmentId || req.params.id) && result) {
+			console.log(result.createdBy._id, req.user._id);
+			console.log(result.createdBy._id.equals(req.user._id));
+
+			if (
+				!result.createdBy._id.equals(req.user._id) &&
+				req.user.duty !== "admin"
+			) {
+				console.log("e reach here");
 				return next(
 					new AppError("You are not authorized to perform this action", 401)
 				);
 			}
 		}
 
-		// console.log(req.user, req.params.id);
+		console.log(req.user, req.params.id);
 		const doc = await Model.findByIdAndDelete(req.params.id);
-		// // console.log(doc);
+		// console.log(doc);
 
 		if (!doc) {
 			next(new AppError("No document found with that ID", 404));
 		}
-		res.status(204).json({
+		res.status(200).json({
 			status: "success",
 			data: null,
 		});
