@@ -28,7 +28,6 @@ export const createOne = (Model) =>
 			for (let review of reviews) {
 				//
 				if (req.user._id.equals(review.createdBy._id)) {
-					console.log("e reach here");
 					reviewCount++;
 				}
 			}
@@ -128,25 +127,18 @@ export const getOne = (Model, popOptions) =>
 export const deleteOne = (Model) =>
 	catchAsync(async (req, res, next) => {
 		const result = await Model.findById(req.params.id);
-		// console.log(result.createdBy.id, req.user.id);
 		if ((req.params.apartmentId || req.params.id) && result) {
-			console.log(result.createdBy._id, req.user._id);
-			console.log(result.createdBy._id.equals(req.user._id));
-
 			if (
 				!result.createdBy._id.equals(req.user._id) &&
 				req.user.duty !== "admin"
 			) {
-				console.log("e reach here");
 				return next(
 					new AppError("You are not authorized to perform this action", 401)
 				);
 			}
 		}
 
-		console.log(req.user, req.params.id);
 		const doc = await Model.findByIdAndDelete(req.params.id);
-		// console.log(doc);
 
 		if (!doc) {
 			next(new AppError("No document found with that ID", 404));

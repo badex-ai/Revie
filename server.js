@@ -10,20 +10,18 @@ process.on("uncaughtException", (err) => {
 	process.exit(1);
 });
 mongoose
-	.connect("mongodb://localhost:27017/Revie", {
+	.connect(config.DATABASE_CLOUD, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 	})
 	.then(() => {
 		console.log("---------------------------------");
 		console.log("                                  ");
-		console.log("Local database connected");
+		console.log(" database connected");
 	})
 	.catch((err) => {
 		console.log(err);
 	});
-
-console.log(config.DATABASE_LOCAL);
 
 const port = process.env.PORT;
 const server = app.listen(port || 8080, () => {

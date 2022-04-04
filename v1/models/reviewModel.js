@@ -36,7 +36,6 @@ const reviewSchema = new mongoose.Schema(
 );
 
 reviewSchema.pre(/^find/, function (next) {
-	console.log("populating review model");
 	this.populate({
 		path: "createdBy",
 		select: "id name",
@@ -47,7 +46,6 @@ reviewSchema.pre(/^find/, function (next) {
 
 reviewSchema.methods.increaseHelpfulCount = function () {
 	this.helpfulCount++;
-	// console.log(this.helpfulCount)
 };
 
 const Review = mongoose.model("Review", reviewSchema);

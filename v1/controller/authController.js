@@ -40,25 +40,18 @@ export const signUp = catchAsync(async (req, res, next) => {
 		password: req.body.password,
 		passwordConfirm: req.body.passwordConfirm,
 	});
-	// console.log(newUser);
-	console.log("------------------------------------ ");
-	console.log("signing up ");
-	console.log("                                 ");
 
 	createSendToken(newUser, 201, res);
 });
 export const signIn = async (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
-	// console.log(email, password);
 
 	if (!email || !password) {
 		return next(new AppError("Please provide email and password!", 400));
 	}
 
 	const user = await User.findOne({ email }).select("+password");
-
-	console.log(await user.checkIfCorrectPassword(password, user.password));
 
 	if (!user || !(await user.checkIfCorrectPassword(password, user.password))) {
 		return next(new AppError("Incorrect email or password", 401));
@@ -67,7 +60,6 @@ export const signIn = async (req, res, next) => {
 };
 
 export const protect = catchAsync(async (req, res, next) => {
-	// console.log(req);
 	let token;
 	if (
 		req.headers.authorization &&
@@ -77,7 +69,6 @@ export const protect = catchAsync(async (req, res, next) => {
 		token = req.headers.authorization.split(" ")[1];
 	} else if (req.cookies.jwt) {
 		token = req.cookies.jwt;
-		// console.log(token);
 	}
 	if (!token) {
 		return next(
@@ -98,8 +89,6 @@ export const protect = catchAsync(async (req, res, next) => {
 });
 
 export const updatePassword = async function (req, res, next) {
-	// console.log(req.user);
-
 	const user = await User.findById(req.user.id).select("+password");
 
 	if (
@@ -118,7 +107,6 @@ export const updatePassword = async function (req, res, next) {
 };
 
 export function logout(req, res, next) {
-	// console.log(req.headers.cookie);
 	res.cookie("jwt", "loggedOut", {
 		httpOnly: true,
 		expires: new Date(Date.now() + 10 * 1000),
@@ -128,12 +116,10 @@ export function logout(req, res, next) {
 
 export function restrictToAdmin(req, res, next) {
 	if (req.user.role !== "admin") {
-		console.log("e reach here");
 		return next(
 			new AppError("You are not allowed to perform this action", 403)
 		);
 	}
 
-	console.log("e didn't reach there");
 	next();
 }
