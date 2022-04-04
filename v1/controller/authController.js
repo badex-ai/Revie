@@ -40,25 +40,18 @@ export const signUp = catchAsync(async (req, res, next) => {
 		password: req.body.password,
 		passwordConfirm: req.body.passwordConfirm,
 	});
-	console.log(newUser);
-	console.log("------------------------------------ ");
-	console.log("signing up ");
-	console.log("                                 ");
 
 	createSendToken(newUser, 201, res);
 });
 export const signIn = async (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
-	console.log(email, password);
 
 	if (!email || !password) {
 		return next(new AppError("Please provide email and password!", 400));
 	}
 
 	const user = await User.findOne({ email }).select("+password");
-
-	console.log(await user.checkIfCorrectPassword(password, user.password));
 
 	if (!user || !(await user.checkIfCorrectPassword(password, user.password))) {
 		return next(new AppError("Incorrect email or password", 401));
@@ -67,7 +60,6 @@ export const signIn = async (req, res, next) => {
 };
 
 export const protect = catchAsync(async (req, res, next) => {
-	// console.log(req);
 	let token;
 	if (
 		req.headers.authorization &&
@@ -95,3 +87,39 @@ export const protect = catchAsync(async (req, res, next) => {
 
 	next();
 });
+
+export const updatePassword = async function (req, res, next) {
+	const user = await User.findById(req.user.id).select("+password");
+
+	if (
+		!(await user.checkIfCorrectPassword(
+			req.body.currentPassword,
+			user.password
+		))
+	) {
+		return next(new AppError("Your current password is wrong.", 401));
+	}
+	(user.password = req.body.newPassword),
+		(user.passwordConfirm = req.body.newPasswordConfirm);
+	user.save();
+
+	createSendToken(user, 200, res);
+};
+
+export function logout(req, res, next) {
+	res.cookie("jwt", "loggedOut", {
+		httpOnly: true,
+		expires: new Date(Date.now() + 10 * 1000),
+	});
+	res.status(200).json({ status: "success" });
+}
+
+export function restrictToAdmin(req, res, next) {
+	if (req.user.role !== "admin") {
+		return next(
+			new AppError("You are not allowed to perform this action", 403)
+		);
+	}
+
+	next();
+}

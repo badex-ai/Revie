@@ -6,7 +6,6 @@ import AppError from "../utils/appError.js";
 export const getUser = factory.getOne(User);
 
 export const getMe = (req, res, next) => {
-	console.log(req.user.id);
 	req.params.id = req.user.id;
 	next();
 };
@@ -25,7 +24,6 @@ export const editMe = async function (req, res, next) {
 	// if (res.body.password || res.body.confirmPassword) {
 	// 	next(AppError("This route is not for changing password.", 400));
 	// }
-	console.log(req);
 	const filteredBody = filterObj(req.body, "name", "email");
 
 	const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
@@ -35,5 +33,3 @@ export const editMe = async function (req, res, next) {
 
 	res.status(200).json({ status: "success", data: { user: updatedUser } });
 };
-
-// export const

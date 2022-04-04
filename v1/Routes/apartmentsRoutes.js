@@ -1,19 +1,35 @@
 import { Router } from "express";
 
 import * as apartmentsController from "../controller/apartmentsController.js";
-import { protect } from "../controller/authController.js";
+import * as authController from "../controller/authController.js";
+
+import reviewRoute from "./reviewRoute.js";
 
 const router = Router();
 
 router
 	.route("/")
 	.get(apartmentsController.getAllApartments)
-	.post(protect, apartmentsController.createApartment);
+	.post(
+		authController.protect,
+		apartmentsController.setUserId,
+		apartmentsController.createApartment
+	);
 
 router
 	.route("/:id")
 	.get(apartmentsController.getApartment)
-	.patch(protect, apartmentsController.editApartment)
-	.delete(protect, apartmentsController.deleteApartment);
+	.patch(
+		authController.protect,
+		apartmentsController.setUserId,
+		apartmentsController.editApartment
+	)
+	.delete(
+		authController.protect,
+		// apartmentsController.setUserId,
+		apartmentsController.deleteApartment
+	);
+
+router.use("/:apartmentId/reviews", reviewRoute);
 
 export default router;

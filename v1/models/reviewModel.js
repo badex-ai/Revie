@@ -10,24 +10,15 @@ const reviewSchema = new mongoose.Schema(
 			type: String,
 			enum: ["Excellent", "Good", "Fair", "Bad", "Awful"],
 		},
-		user: {
-			type: mongoose.Schema.ObjectId,
+		createdBy: {
+			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 			required: [true, "Review must belong to a user"],
 		},
 		apartment: {
-			type: mongoose.Schema.ObjectId,
+			type: mongoose.Schema.Types.ObjectId,
 			ref: "Apartment",
-			required: [true, "Review must belong to a user"],
-		},
-		amenities: {
-			type: String,
-			enum: ["Excellent", "Good", "fair", "bad", "Awful"],
-			required: [true, "Please choose an amenities rating"],
-		},
-		landlord: {
-			types: String,
-			required: [true, "Please enter landlord review"],
+			required: [true, "Review must belong to an apartment"],
 		},
 		createdAt: {
 			type: Date,
@@ -35,6 +26,7 @@ const reviewSchema = new mongoose.Schema(
 		},
 		helpfulCount: {
 			type: Number,
+			default: 0,
 		},
 	},
 	{
@@ -45,12 +37,16 @@ const reviewSchema = new mongoose.Schema(
 
 reviewSchema.pre(/^find/, function (next) {
 	this.populate({
-		path: "User",
-		select: "name",
+		path: "createdBy",
+		select: "id name",
 	});
 
 	next();
 });
+
+reviewSchema.methods.increaseHelpfulCount = function () {
+	this.helpfulCount++;
+};
 
 const Review = mongoose.model("Review", reviewSchema);
 

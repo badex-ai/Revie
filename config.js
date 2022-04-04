@@ -1,6 +1,4 @@
 import dotenv from "dotenv";
-import jwt from "express-jwt";
-import jwks from "jwks-rsa";
 
 dotenv.config({
 	path: "./config.env",
