@@ -59,7 +59,7 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 app.use(compression());
 
-app.get("/api/v1/", function (req, res) {
+app.get("/", function (req, res) {
 	res.redirect("/api/v1/apartments");
 });
 app.use("/api/v1/apartments", apartmentsRouter);
