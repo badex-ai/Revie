@@ -60,7 +60,13 @@ app.use(mongoSanitize());
 app.use(compression());
 
 app.get("/", function (req, res) {
-	res.redirect("/api/v1/apartments");
+	res.send(`
+    <h3>Welcome to the apartmentCheq api please click the link below to read  documentation and query api endpoints </h3>
+    
+    <ul>
+      <li><a hhttps://elements.getpostman.com/redirect?entityId=8841846-a99dd7ec-2f1c-46bb-91d1-1ccf56a8c512&entityType=collectionm" target="_blank">ApartmentCheq on postman</a></li>
+    </ul>
+  `)
 });
 app.use("/api/v1/apartments", apartmentsRouter);
 app.use("/api/v1/users", userRouter);
